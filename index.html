@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema — Missões</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #050a0f;
+      color: #fff;
+    }
+    header {
+      background: #071016;
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #0ff;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
+    .container {
+      padding: 15px;
+    }
+    .btn {
+      background: #0ff;
+      border: none;
+      color: #071016;
+      padding: 10px 15px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #09c;
+      color: #fff;
+    }
+    .task-form {
+      background: #0b1218;
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid #0ff;
+      margin-bottom: 20px;
+    }
+    .task-form input, .task-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 10px;
+      border: 1px solid #0ff;
+      background: #050a0f;
+      color: #fff;
+    }
+    .task-list .task {
+      background: #0c151c;
+      border: 1px solid #0ff;
+      border-radius: 16px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .task.done {
+      border-color: #3bffa3;
+      opacity: 0.7;
+      text-decoration: line-through;
+    }
+    .task h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #0ff;
+    }
+    .task p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .task .actions {
+      margin-top: 8px;
+    }
+    .task .actions button {
+      margin-right: 8px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .done-btn {
+      background: #10323d;
+      color: #0ff;
+    }
+    .delete-btn {
+      background: #2a0f16;
+      color: #f55;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>S I S T E M A — Missões</h1>
+  </header>  <div class="container">
+    <div class="task-form">
+      <input type="text" id="title" placeholder="Título da missão (obrigatório)">
+      <textarea id="details" placeholder="Descrição / objetivos"></textarea>
+      <input type="text" id="category" placeholder="Categoria (ex: Trabalho, Estudo, Treino)">
+      <input type="text" id="due" placeholder="Prazo (ex: 31/08 ou 31/08 18:00)">
+      <button class="btn" onclick="addTask()">Aceitar Missão</button>
+    </div><div id="tasks" class="task-list"></div>
+
+  </div>  <script>
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('tasks');
+      container.innerHTML = '';
+      tasks.forEach((t, i) => {
+        const div = document.createElement('div');
+        div.className = 'task' + (t.done ? ' done' : '');
+        div.innerHTML = `
+          <h3>${t.title}</h3>
+          <p>${t.details || ''}</p>
+          <p><b>Categoria:</b> ${t.category || ''}</p>
+          <p><b>Prazo:</b> ${t.due || ''}</p>
+          <div class="actions">
+            <button class="done-btn" onclick="toggleDone(${i})">${t.done ? 'Desfazer' : 'Concluir'}</button>
+            <button class="delete-btn" onclick="deleteTask(${i})">Excluir</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addTask() {
+      const title = document.getElementById('title').value.trim();
+      if (!title) return alert('O título é obrigatório!');
+      const details = document.getElementById('details').value.trim();
+      const category = document.getElementById('category').value.trim();
+      const due = document.getElementById('due').value.trim();
+      tasks.push({title, details, category, due, done:false});
+      saveTasks();
+      renderTasks();
+      document.getElementById('title').value = '';
+      document.getElementById('details').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('due').value = '';
+    }
+
+    function toggleDone(i) {
+      tasks[i].done = !tasks[i].done;
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(i) {
+      tasks.splice(i, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    renderTasks();
+  </script></body>
+</html>
